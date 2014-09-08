@@ -84,11 +84,17 @@ body {
 }
 .entry {
   display: flex;
+  margin-bottom: 4px;
 }
 .preview {
+  padding: 20px;
+  background: hsl(184, 49%, 10%);
 }
+  .preview:hover {
+    background: hsl(184, 49%, 14%);
+  }
 .preview canvas {
-  width: 240px; height: 240px;
+  width: 120px; height: 120px;
 }
 .description {
   vertical-align: top;
@@ -218,20 +224,20 @@ component = ({id, data, title, note}) ->
 
   do draw_bp = preview.draw_bp = ->
     canvas = preview.querySelector('canvas')
-    canvas.width = canvas.height = 240 * devicePixelRatio
-    canvas.style.width = canvas.style.height = '240px'
+    canvas.width = canvas.height = 120 * devicePixelRatio
+    canvas.style.width = canvas.style.height = '120px'
     ctx = canvas.getContext '2d'
     ctx.scale devicePixelRatio, devicePixelRatio
 
     bb = sim.boundingBox()
-    tw = bb.right - bb.left + 3
-    th = bb.bottom - bb.top + 3
-    size = Math.min(240/tw, 240/th)|0
-    worldToScreen = (tx, ty) -> {px: (tx-bb.left+1) * size, py: (ty-bb.top+1) * size}
+    tw = bb.right - bb.left
+    th = bb.bottom - bb.top
+    size = Math.min(120/tw, 120/th)|0
+    worldToScreen = (tx, ty) -> {px: (tx-bb.left) * size, py: (ty-bb.top) * size}
     sim.drawCanvas ctx, size, worldToScreen
 
     if isEmpty(sim.getGrid())
-      ctx.fillStyle = 'gray'
+      ctx.fillStyle = 'transparent'
       ctx.fillRect 0, 0, canvas.width, canvas.height
   preview.update_bp = (json) ->
     sim.setGrid json
