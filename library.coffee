@@ -323,10 +323,12 @@ request '/data/all', (er, res, body) ->
   components = JSON.parse body
   for c in components
     entries.appendChild component c
-  setInterval =>
-    for e in document.querySelectorAll('.preview')
-      delta = e.boilerplate.step()
-      if !isEmpty delta.changed
-        e.draw_bp()
-  , 200
+  setInterval ->
+    return unless document.visibilityState is 'visible'
+    requestAnimationFrame ->
+      for e in document.querySelectorAll('.preview')
+        delta = e.boilerplate.step()
+        if !isEmpty delta.changed
+          e.draw_bp()
+  , 400
   return
