@@ -224,6 +224,10 @@ component = ({id, data, title, note}) ->
     size = Math.min(240/tw, 240/th)|0
     worldToScreen = (tx, ty) -> {px: (tx-bb.left+1) * size, py: (ty-bb.top+1) * size}
     sim.drawCanvas ctx, size, worldToScreen
+
+    if Object.keys(sim.getGrid()).length == 0
+      ctx.fillStyle = 'gray'
+      ctx.fillRect 0, 0, canvas.width, canvas.height
   preview.update_bp = (json) ->
     sim.setGrid json
     draw_bp()
