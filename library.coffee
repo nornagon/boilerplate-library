@@ -202,6 +202,10 @@ editableName = (title, opts={area:false, change:->}) ->
         cancel()
   el
 
+isEmpty = (obj) ->
+  return false for k of obj
+  return true
+
 component = ({id, data, title, note}) ->
   el = tag '.entry', [
     preview = tag '.preview', [tag 'canvas'], tabindex: 0
@@ -211,7 +215,8 @@ component = ({id, data, title, note}) ->
     ]
   ]
   sim = preview.boilerplate = new Simulator data
-  do draw_bp = ->
+
+  do draw_bp = preview.draw_bp = ->
     canvas = preview.querySelector('canvas')
     canvas.width = canvas.height = 240 * devicePixelRatio
     canvas.style.width = canvas.style.height = '240px'
@@ -225,7 +230,7 @@ component = ({id, data, title, note}) ->
     worldToScreen = (tx, ty) -> {px: (tx-bb.left+1) * size, py: (ty-bb.top+1) * size}
     sim.drawCanvas ctx, size, worldToScreen
 
-    if Object.keys(sim.getGrid()).length == 0
+    if isEmpty(sim.getGrid())
       ctx.fillStyle = 'gray'
       ctx.fillRect 0, 0, canvas.width, canvas.height
   preview.update_bp = (json) ->
@@ -284,4 +289,10 @@ request '/data/all', (er, res, body) ->
   components = JSON.parse body
   for c in components
     entries.appendChild component c
+  setInterval =>
+    for e in document.querySelectorAll('.preview')
+      delta = e.boilerplate.step()
+      if !isEmpty delta.changed
+        e.draw_bp()
+  , 200
   return
