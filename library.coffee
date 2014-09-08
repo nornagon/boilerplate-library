@@ -115,7 +115,7 @@ a:hover {
   color: hsl(120, 73%, 90%);
 }
 a.remove {
-  display: block;
+  display: inline-block;
   margin-top: 10px;
   color: pink;
 }
