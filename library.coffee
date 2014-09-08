@@ -123,6 +123,7 @@ a:hover {
 }
 .expanding-input div {
   margin-right: 1px;
+  white-space: pre;
 }
 .expanding-input input {
   background: transparent;
@@ -181,10 +182,11 @@ editableName = (title, opts={area:false, change:->}) ->
     input.value = val
     doneYet = false
     done = ->
+      return cancel() if input.value.trim().length == 0
       return if doneYet
       doneYet = true
-      el.parentNode.replaceChild editableName(input.value, opts), el
-      opts.change?(input.value)
+      el.parentNode.replaceChild editableName(input.value.trim(), opts), el
+      opts.change?(input.value.trim())
     cancel = ->
       return if doneYet
       doneYet = true
