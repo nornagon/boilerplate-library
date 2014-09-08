@@ -26,7 +26,7 @@ app.get '/data/all', (req, res, next) ->
 
 app.post '/data', (req, res, next) ->
   return next 'Missing body' unless typeof req.body is 'object'
-  id = "entry/#{hat 32}"
+  id = "entry.#{hat 32}"
   db.put id, req.body, (err) ->
     return next err if err
     res.send {id}
