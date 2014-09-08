@@ -1,4 +1,4 @@
 .PHONY: all
 
 all:
-	coffee -cbw library.coffee
+	coffee -cbw public/library.coffee

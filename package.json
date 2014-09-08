@@ -7,12 +7,13 @@
     "express": "~4.8.8",
     "level": "~0.18.0",
     "boilerplate-sim": "~1.0.3",
-    "hat": "0.0.3",
-    "body-parser": "^1.8.0"
+    "body-parser": "^1.8.0",
+    "coffee-script": "^1.8.0"
   },
   "devDependencies": {},
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "coffee server.coffee"
   },
   "repository": {
     "type": "git",

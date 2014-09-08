@@ -2,10 +2,10 @@ express = require 'express'
 http = require 'http'
 level = require 'level'
 bodyParser = require 'body-parser'
-hat = require 'hat'
 
 app = express()
-app.use express.static "#{__dirname}"
+app.use express.static "#{__dirname}/public"
+app.use '/assets', express.static "#{__dirname}/assets"
 app.use bodyParser.json()
 
 db = level 'db', valueEncoding:'json'
