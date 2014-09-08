@@ -243,7 +243,9 @@ component = ({id, data, title, note}) ->
     tw = bb.right - bb.left
     th = bb.bottom - bb.top
     size = Math.min(120/tw, 120/th)|0
-    worldToScreen = (tx, ty) -> {px: (tx-bb.left) * size, py: (ty-bb.top) * size}
+    px_w_remaining = 120 - tw * size
+    px_h_remaining = 120 - th * size
+    worldToScreen = (tx, ty) -> {px: (tx-bb.left) * size + (px_w_remaining/2)|0, py: (ty-bb.top) * size + (px_h_remaining/2)|0}
     sim.drawCanvas ctx, size, worldToScreen
 
     if isEmpty(sim.getGrid())
