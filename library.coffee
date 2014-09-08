@@ -70,7 +70,7 @@ makeExpandingArea = (val) ->
     tag 'div', [span = tag('span'), tag 'br']
     input = tag 'textarea'
   ]
-  input.addEventListener 'input', oninput = -> span.textContent = input.textContent
+  input.addEventListener 'input', oninput = -> span.textContent = input.value
   input.textContent = val if val?
   oninput()
   container
@@ -97,8 +97,8 @@ body {
 .name {
   font-weight: 600;
 }
-.name .fa {
-  color: lightgreen;
+.body {
+  white-space: pre-wrap;
 }
 a {
   color: lightgreen;
@@ -159,22 +159,46 @@ a {
 }
 '''
 
+editableName = (title, {area}={area:false}) ->
+  el = tag 'div', [
+    tag 'span', title
+    ' '
+    tag 'a', [tag 'i.fa.fa-edit'], onclick: -> edit()
+  ]
+  edit = ->
+    val = el.querySelector('span').textContent
+    el.textContent = ''
+    el.appendChild if area then makeExpandingArea(val) else makeExpandingInput(val)
+    input = el.querySelector(if area then 'textarea' else 'input')
+    input.focus()
+    doneYet = false
+    done = ->
+      return if doneYet
+      doneYet = true
+      el.parentNode.replaceChild editableName(input.value, {area}), el
+    cancel = ->
+      return if doneYet
+      doneYet = true
+      el.parentNode.replaceChild editableName(val, {area}), el
+    input.addEventListener 'blur', done
+    input.addEventListener 'keydown', (e) =>
+      if e.keyCode is 13
+        if !area or area and e.shiftKey
+          e.preventDefault()
+          done()
+      if e.keyCode is 27
+        e.preventDefault()
+        cancel()
+  el
+
 component = ({data, title, note}) ->
   el = tag '.entry', [
     preview = tag '.preview', [tag 'canvas'], tabindex: 0
     tag '.description', [
-      name = tag '.name', [
-        tag 'span', title
-        ' '
-        tag 'i.fa.fa-edit', onclick: -> edit()
-      ]
-      tag '.body', note
+      tag '.name', name = editableName(title)
+      tag '.body', note = editableName(note, area: true)
     ]
   ]
-  edit = ->
-    val = name.querySelector('span').textContent
-    name.textContent = ''
-    name.appendChild makeExpandingInput(val)
   preview.boilerplate = new Simulator
   el
 
