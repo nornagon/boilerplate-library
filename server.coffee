@@ -38,6 +38,11 @@ app.put '/data/:id', (req, res, next) ->
     return next err if err
     res.send {ok:true}
 
+app.delete '/data/:id', (req, res, next) ->
+  db.del req.params.id, (err) ->
+    return next err if err
+    res.send {ok:true}
+
 server = http.createServer app
 server.listen '4433'
 console.log 'listening on 4433'

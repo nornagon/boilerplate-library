@@ -113,6 +113,11 @@ a {
 a:hover {
   color: hsl(120, 73%, 90%);
 }
+a.remove {
+  display: block;
+  margin-top: 10px;
+  color: pink;
+}
 
 
 .expanding-input {
@@ -218,6 +223,11 @@ component = ({id, data, title, note}) ->
     tag '.description', [
       tag '.name', editableName(title, change: (val) -> title = val; update())
       tag '.body', editableName(note, area: true, change: (val) -> note = val; update())
+      tag 'a.remove', [
+        tag 'i.fa.fa-remove'
+        ' '
+        'remove'
+      ], onclick: -> remove()
     ]
   ]
   sim = preview.boilerplate = new Simulator data
@@ -253,6 +263,15 @@ component = ({id, data, title, note}) ->
       json: true
     , (er, res, body) ->
       alert er if er
+
+  remove = ->
+    return unless confirm "Delete #{title}?"
+    request
+      method: 'DELETE'
+      url: "/data/#{el.library_id}"
+    , (er, res, body) ->
+      alert er if er
+      el.remove()
   el
 
 add = (e) ->
