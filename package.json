@@ -6,7 +6,9 @@
   "dependencies": {
     "express": "~4.8.8",
     "level": "~0.18.0",
-    "boilerplate-sim": "~1.0.3"
+    "boilerplate-sim": "~1.0.3",
+    "hat": "0.0.3",
+    "body-parser": "^1.8.0"
   },
   "devDependencies": {},
   "scripts": {

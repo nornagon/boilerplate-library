@@ -1,10 +1,12 @@
 express = require 'express'
 http = require 'http'
 level = require 'level'
+bodyParser = require 'body-parser'
+hat = require 'hat'
 
 app = express()
 app.use express.static "#{__dirname}"
-
+app.use bodyParser.json()
 
 db = level 'db', valueEncoding:'json'
 
@@ -14,12 +16,27 @@ app.get '/data/all', (req, res, next) ->
   data = []
 
   stream.on 'data', (entry) ->
-    data.push entry.value
+    console.log 'found data', entry
+    v = entry.value
+    v.id = entry.key
+    data.push v
   stream.on 'end', ->
     res.send data
 
   stream.on 'error', (err) -> next(err)
 
+app.put '/data', (req, res, next) ->
+  return next 'Missing body' unless typeof req.body is 'object'
+  id = req.body.id = hat()
+  db.put id, req.body, (err) ->
+    return next err if err
+    res.send {id}
+
+app.post '/data/:id', (req, res, next) ->
+  return next 'Missing body' unless typeof req.body is 'object'
+  db.put req.params.id, req.body, (err) ->
+    return next err if err
+    res.send {ok:true}
 
 server = http.createServer app
 server.listen '4433'
