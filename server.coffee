@@ -25,14 +25,14 @@ app.get '/data/all', (req, res, next) ->
 
   stream.on 'error', (err) -> next(err)
 
-app.put '/data', (req, res, next) ->
+app.post '/data', (req, res, next) ->
   return next 'Missing body' unless typeof req.body is 'object'
   id = req.body.id = hat()
   db.put id, req.body, (err) ->
     return next err if err
     res.send {id}
 
-app.post '/data/:id', (req, res, next) ->
+app.put '/data/:id', (req, res, next) ->
   return next 'Missing body' unless typeof req.body is 'object'
   db.put req.params.id, req.body, (err) ->
     return next err if err

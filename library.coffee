@@ -101,7 +101,11 @@ body {
   white-space: pre-wrap;
 }
 a {
-  color: lightgreen;
+  color: hsl(120, 73%, 75%);
+  cursor: pointer;
+}
+a:hover {
+  color: hsl(120, 73%, 90%);
 }
 
 
@@ -159,7 +163,8 @@ a {
 }
 '''
 
-editableName = (title, {area}={area:false}) ->
+editableName = (title, opts={area:false, change:->}) ->
+  area = opts.area
   el = tag 'div', [
     tag 'span', title
     ' '
@@ -171,15 +176,19 @@ editableName = (title, {area}={area:false}) ->
     el.appendChild if area then makeExpandingArea(val) else makeExpandingInput(val)
     input = el.querySelector(if area then 'textarea' else 'input')
     input.focus()
+    # put cursor at end of textarea, cribbed from http://css-tricks.com/snippets/jquery/mover-cursor-to-end-of-textarea/
+    input.value = ''
+    input.value = val
     doneYet = false
     done = ->
       return if doneYet
       doneYet = true
-      el.parentNode.replaceChild editableName(input.value, {area}), el
+      el.parentNode.replaceChild editableName(input.value, opts), el
+      opts.change?(input.value)
     cancel = ->
       return if doneYet
       doneYet = true
-      el.parentNode.replaceChild editableName(val, {area}), el
+      el.parentNode.replaceChild editableName(val, opts), el
     input.addEventListener 'blur', done
     input.addEventListener 'keydown', (e) =>
       if e.keyCode is 13
@@ -191,25 +200,58 @@ editableName = (title, {area}={area:false}) ->
         cancel()
   el
 
-component = ({data, title, note}) ->
+component = ({id, data, title, note}) ->
   el = tag '.entry', [
     preview = tag '.preview', [tag 'canvas'], tabindex: 0
     tag '.description', [
-      tag '.name', name = editableName(title)
-      tag '.body', note = editableName(note, area: true)
+      tag '.name', editableName(title, change: (val) -> title = val; update())
+      tag '.body', editableName(note, area: true, change: (val) -> note = val; update())
     ]
   ]
-  preview.boilerplate = new Simulator
+  sim = preview.boilerplate = new Simulator data
+  do draw_bp = ->
+    canvas = preview.querySelector('canvas')
+    canvas.width = canvas.height = 240 * devicePixelRatio
+    canvas.style.width = canvas.style.height = '240px'
+    ctx = canvas.getContext '2d'
+    ctx.scale devicePixelRatio, devicePixelRatio
+
+    bb = sim.boundingBox()
+    tw = bb.right - bb.left + 3
+    th = bb.bottom - bb.top + 3
+    size = Math.min(240/tw, 240/th)|0
+    worldToScreen = (tx, ty) -> {px: (tx-bb.left+1) * size, py: (ty-bb.top+1) * size}
+    sim.drawCanvas ctx, size, worldToScreen
+  preview.update_bp = (json) ->
+    sim.setGrid json
+    draw_bp()
+    data = json
+    update()
+  el.library_id = id
+  update = ->
+    request
+      method: 'PUT'
+      url: "/data/#{el.library_id}"
+      body: JSON.stringify {id, data, title, note}
+      json: true
+    , (er, res, body) ->
+      alert er if er
   el
 
 add = (e) ->
   e.preventDefault()
-  entries.appendChild component({data:null, title:'Unnamed component', note:'No note'})
+  c = {data:{}, title:'Unnamed component', note:'No note'}
+  request
+    url: '/data'
+    method: 'POST'
+    body: JSON.stringify c
+    json: true
+  , (er, res, body) ->
+    c.id = body.id
+    entries.appendChild component(c)
 
 document.body.appendChild tag '#main', [
-  entries = tag '.entries', [
-    component data:null, title:'4-bit adder', note:'adds 4 bits'
-  ]
+  entries = tag '.entries', []
   tag 'a.add', '+ new entry', onclick: add, href: '#'
 ]
 
@@ -221,24 +263,19 @@ window.addEventListener 'paste', (e) ->
       try
         json = JSON.parse data
         delete json.tw; delete json.th
-        sim.setGrid json
-        canvas = document.activeElement.querySelector('canvas')
-        canvas.width = canvas.height = 240 * devicePixelRatio
-        canvas.style.width = canvas.style.height = '240px'
-        ctx = canvas.getContext '2d'
-        ctx.scale devicePixelRatio, devicePixelRatio
-
-        bb = sim.boundingBox()
-        tw = bb.right - bb.left + 3
-        th = bb.bottom - bb.top + 3
-        size = Math.min(240/tw, 240/th)|0
-        worldToScreen = (tx, ty) -> {px: (tx-bb.left+1) * size, py: (ty-bb.top+1) * size}
-        sim.drawCanvas ctx, size, worldToScreen
+        document.activeElement.update_bp(json)
       catch e
-        console.error e.stack
+        console.error 'error pasting boilerplate:', e.stack
 
 window.addEventListener 'copy', (e) ->
   if document.activeElement.boilerplate?
     e.preventDefault()
     bp = document.activeElement.boilerplate
     e.clipboardData.setData 'text', JSON.stringify bp.getGrid()
+
+
+request '/data/all', (er, res, body) ->
+  components = JSON.parse body
+  for c in components
+    entries.appendChild component c
+  return
