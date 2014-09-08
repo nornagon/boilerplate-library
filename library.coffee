@@ -97,6 +97,7 @@ body {
   width: 120px; height: 120px;
 }
 .description {
+  flex: 1;
   vertical-align: top;
   padding-left: 10px;
 }
@@ -117,6 +118,12 @@ a.remove {
   display: block;
   margin-top: 10px;
   color: pink;
+}
+a.edit {
+  opacity: 0.2;
+}
+:hover > a.edit {
+  opacity: 1;
 }
 
 
@@ -180,7 +187,7 @@ editableName = (title, opts={area:false, change:->}) ->
   el = tag 'div', [
     tag 'span', title
     ' '
-    tag 'a', [tag 'i.fa.fa-edit'], onclick: -> edit()
+    tag 'a.edit', [tag 'i.fa.fa-edit'], onclick: -> edit()
   ]
   edit = ->
     val = el.querySelector('span').textContent
