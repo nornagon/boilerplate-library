@@ -6,13 +6,14 @@
   "dependencies": {
     "express": "~4.8.8",
     "level": "~0.18.0",
-    "boilerplate-sim": "~1.0.3",
+    "boilerplate-sim": "^1.1.0",
     "body-parser": "^1.8.0",
     "coffee-script": "^1.8.0"
   },
   "devDependencies": {},
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
+    "prepublish": "make all",
     "start": "coffee server.coffee"
   },
   "repository": {

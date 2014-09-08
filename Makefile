@@ -1,4 +1,7 @@
 .PHONY: all
 
-all:
+watch:
 	coffee -cbw public/library.coffee
+
+all:
+	coffee -cb public/library.coffee
