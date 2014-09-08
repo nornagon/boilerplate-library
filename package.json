@@ -1,0 +1,28 @@
+{
+  "name": "boilerplate-library",
+  "version": "0.0.0",
+  "description": "",
+  "main": "server.js",
+  "dependencies": {
+    "express": "~4.8.8",
+    "level": "~0.18.0",
+    "boilerplate-sim": "~1.0.3"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/nornagon/boilerplate-library.git"
+  },
+  "keywords": [
+    "boilerplate"
+  ],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/nornagon/boilerplate-library/issues"
+  },
+  "homepage": "https://github.com/nornagon/boilerplate-library"
+}
