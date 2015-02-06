@@ -267,7 +267,7 @@ component = ({id, data, title, note}) ->
   update = ->
     request
       method: 'PUT'
-      url: "/data/#{el.library_id}"
+      url: "data/#{el.library_id}"
       body: JSON.stringify {id, data, title, note}
       json: true
     , (er, res, body) ->
@@ -277,7 +277,7 @@ component = ({id, data, title, note}) ->
     return unless confirm "Delete #{title}?"
     request
       method: 'DELETE'
-      url: "/data/#{el.library_id}"
+      url: "data/#{el.library_id}"
     , (er, res, body) ->
       alert er if er
       el.remove()
@@ -287,7 +287,7 @@ add = (e) ->
   e.preventDefault()
   c = {data:{}, title:'Unnamed component', note:'No note'}
   request
-    url: '/data'
+    url: 'data'
     method: 'POST'
     body: JSON.stringify c
     json: true
@@ -319,7 +319,7 @@ window.addEventListener 'copy', (e) ->
     e.clipboardData.setData 'text', JSON.stringify bp.getGrid()
 
 
-request '/data/all', (er, res, body) ->
+request 'data/all', (er, res, body) ->
   components = JSON.parse body
   for c in components
     entries.appendChild component c
